@@ -13,7 +13,7 @@ def parse_text_file(file_path):
             person_data = {}
             for detail in details:
                 key, value = detail.split(': ')
-                person_data[key.lower()] = value
+                person_data[key.lower()] = int(value) if key.lower() == 'age' else value
             parsed_data.append(person_data)
     print("Txt data:")
     print(parsed_data)
@@ -24,7 +24,7 @@ def parse_xml_file(file_path):
     root = tree.getroot()
     data = []
     for person in root.findall('person'):
-        person_data = {child.tag: child.text for child in person}
+        person_data = {child.tag: int(child.text) if child.tag == 'age' else child.text for child in person}
         data.append(person_data)
     print("XML data:")
     print(data)
@@ -33,6 +33,7 @@ def parse_xml_file(file_path):
 def parse_yml_file(file_path):
     with open(file_path, 'r') as file:
         data = yaml.safe_load(file)
+        data['person'] = [{k: int(v) if k == 'age' else v for k, v in person.items()} for person in data['person']]
     print("YAML data:")
     print(data)
     print("")
@@ -40,6 +41,7 @@ def parse_yml_file(file_path):
 def parse_json_file(file_path):
     with open(file_path, 'r') as file:
         data = json.load(file)
+        data['person'] = [{k: int(v) if k == 'age' else v for k, v in person.items()} for person in data['person']]
     print("JSON data:")
     print(data)
     print("")
@@ -47,11 +49,10 @@ def parse_json_file(file_path):
 def parse_csv_file(file_path):
     with open(file_path, 'r') as file:
         reader = csv.DictReader(file)
-        data = [row for row in reader]
+        data = [{k: int(v) if k == 'age' else v for k, v in row.items()} for row in reader]
     print("CSV data:")
     print(data)
     print("")
-
 
 supported_files = {
     '.txt': parse_text_file,

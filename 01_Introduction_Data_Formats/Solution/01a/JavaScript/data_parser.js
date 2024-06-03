@@ -11,7 +11,7 @@ function parseTextFile(filePath) {
         const personData = {};
         details.forEach(detail => {
             const [key, value] = detail.split(': ');
-            personData[key.toLowerCase()] = value;
+            personData[key.toLowerCase()] = key.toLowerCase() === 'age' ? parseInt(value, 10) : value;
         });
         return personData;
     });
@@ -29,7 +29,7 @@ function parseXmlFile(filePath) {
         const parsedData = result.people.person.map(person => {
             const personData = {};
             for (const [key, value] of Object.entries(person)) {
-                personData[key] = value[0];
+                personData[key] = key === 'age' ? parseInt(value[0], 10) : value[0];
             }
             return personData;
         });
@@ -41,17 +41,23 @@ function parseXmlFile(filePath) {
 
 function parseYamlFile(filePath) {
     const data = fs.readFileSync(filePath, 'utf8');
-    const parsedData = yaml.load(data);
+    const parsedData = yaml.load(data).person.map(person => {
+        person.age = parseInt(person.age, 10);
+        return person;
+    });
     console.log("YAML data:");
-    console.log(parsedData);
+    console.log({ person: parsedData });
     console.log("");
 }
 
 function parseJsonFile(filePath) {
     const data = fs.readFileSync(filePath, 'utf8');
-    const parsedData = JSON.parse(data);
+    const parsedData = JSON.parse(data).person.map(person => {
+        person.age = parseInt(person.age, 10);
+        return person;
+    });
     console.log("JSON data:");
-    console.log(parsedData);
+    console.log({ person: parsedData });
     console.log("");
 }
 
@@ -59,7 +65,10 @@ function parseCsvFile(filePath) {
     const parsedData = [];
     fs.createReadStream(filePath)
         .pipe(csv())
-        .on('data', (data) => parsedData.push(data))
+        .on('data', (data) => {
+            data.age = parseInt(data.age, 10);
+            parsedData.push(data);
+        })
         .on('end', () => {
             console.log("CSV data:");
             console.log(parsedData);
