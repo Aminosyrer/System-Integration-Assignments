@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><database name="testdb" schema="public" type="PostgreSQL - 16.3 (Debian 16.3-1.pgdg120+1)">
+   <sequences>
+      <sequence increment="1" name="employees_id_seq" startValue="1"/>
+   </sequences>
+   <tables>
+      <table name="employees" remarks="" schema="public" type="TABLE">
+         <column autoUpdated="true" defaultValue="nextval('employees_id_seq'::regclass)" digits="0" id="0" name="id" nullable="false" remarks="" size="10" type="serial" typeCode="4"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="1" name="name" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="0" id="2" name="position" nullable="true" remarks="" size="100" type="varchar" typeCode="12"/>
+         <column autoUpdated="false" defaultValue="null" digits="2" id="3" name="salary" nullable="true" remarks="" size="10" type="numeric" typeCode="2"/>
+         <primaryKey column="id" sequenceNumberInPK="1"/>
+         <index name="employees_pkey" unique="true">
+            <column ascending="true" name="id"/>
+         </index>
+      </table>
+   </tables>
+</database>
