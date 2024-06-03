@@ -1,0 +1,12 @@
+<people>
+    <person>
+        <name>Amin</name>
+        <age>25</age>
+        <city>Copenhagen</city>
+    </person>
+    <person>
+        <name>John Doe</name>
+        <age>30</age>
+        <city>London</city>
+    </person>
+</people>
