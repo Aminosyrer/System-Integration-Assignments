@@ -1,12 +1,19 @@
+const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const xml2js = require('xml2js');
 const yaml = require('js-yaml');
 const csv = require('csv-parser');
+const axios = require('axios');
 
-function parseTextFile(filePath) {
-    const data = fs.readFileSync(filePath, 'utf8').trim().split(/\r?\n\r?\n/);
-    const parsedData = data.map(person => {
+const app = express();
+const port = 3000;
+
+const dataFolderPath = path.join(__dirname, '..', 'Data');
+
+function parseTextFile() {
+    const data = fs.readFileSync(path.join(dataFolderPath, 'data.txt'), 'utf8').trim().split(/\r?\n\r?\n/);
+    return data.map(person => {
         const details = person.split(/\r?\n/);
         const personData = {};
         details.forEach(detail => {
@@ -15,98 +22,93 @@ function parseTextFile(filePath) {
         });
         return personData;
     });
-    console.log("Txt data:");
-    console.log(parsedData);
-    console.log("");
 }
 
-function parseXmlFile(filePath) {
-    const data = fs.readFileSync(filePath, 'utf8');
+function parseXmlFile() {
+    const data = fs.readFileSync(path.join(dataFolderPath, 'data.xml'), 'utf8');
+    let parsedData;
     xml2js.parseString(data, (err, result) => {
         if (err) {
             throw err;
         }
-        const parsedData = result.people.person.map(person => {
+        parsedData = result.people.person.map(person => {
             const personData = {};
             for (const [key, value] of Object.entries(person)) {
                 personData[key] = key === 'age' ? parseInt(value[0], 10) : value[0];
             }
             return personData;
         });
-        console.log("XML data:");
-        console.log(parsedData);
-        console.log("");
     });
+    return parsedData;
 }
 
-function parseYamlFile(filePath) {
-    const data = fs.readFileSync(filePath, 'utf8');
-    const parsedData = yaml.load(data).person.map(person => {
+function parseYamlFile() {
+    const data = fs.readFileSync(path.join(dataFolderPath, 'data.yml'), 'utf8');
+    return yaml.load(data).person.map(person => {
         person.age = parseInt(person.age, 10);
         return person;
     });
-    console.log("YAML data:");
-    console.log({ person: parsedData });
-    console.log("");
 }
 
-function parseJsonFile(filePath) {
-    const data = fs.readFileSync(filePath, 'utf8');
-    const parsedData = JSON.parse(data).person.map(person => {
+function parseJsonFile() {
+    const data = fs.readFileSync(path.join(dataFolderPath, 'data.json'), 'utf8');
+    return JSON.parse(data).person.map(person => {
         person.age = parseInt(person.age, 10);
         return person;
     });
-    console.log("JSON data:");
-    console.log({ person: parsedData });
-    console.log("");
 }
 
-function parseCsvFile(filePath) {
+function parseCsvFile() {
     const parsedData = [];
-    fs.createReadStream(filePath)
-        .pipe(csv())
-        .on('data', (data) => {
-            data.age = parseInt(data.age, 10);
-            parsedData.push(data);
-        })
-        .on('end', () => {
-            console.log("CSV data:");
-            console.log(parsedData);
-            console.log("");
-        });
-}
-
-const supportedFiles = {
-    '.txt': parseTextFile,
-    '.xml': parseXmlFile,
-    '.yaml': parseYamlFile,
-    '.yml': parseYamlFile,
-    '.json': parseJsonFile,
-    '.csv': parseCsvFile
-};
-
-function parseFile(filePath) {
-    const fileType = path.extname(filePath);
-    if (fileType in supportedFiles) {
-        supportedFiles[fileType](filePath);
-    } else {
-        return null;
-    }
-}
-
-function parseAllFilesInFolder(folderPath) {
-    fs.readdir(folderPath, (err, files) => {
-        if (err) {
-            throw err;
-        }
-        files.forEach((filename) => {
-            const filePath = path.join(folderPath, filename);
-            if (fs.statSync(filePath).isFile()) {
-                parseFile(filePath);
-            }
-        });
+    return new Promise((resolve, reject) => {
+        fs.createReadStream(path.join(dataFolderPath, 'data.csv'))
+            .pipe(csv())
+            .on('data', (data) => {
+                data.age = parseInt(data.age, 10);
+                parsedData.push(data);
+            })
+            .on('end', () => {
+                resolve(parsedData);
+            });
     });
 }
 
-const dataFolderPath = path.resolve(__dirname, '../Data');
-parseAllFilesInFolder(dataFolderPath);
+app.get('/text', (req, res) => {
+    const data = parseTextFile();
+    res.json(data);
+});
+
+app.get('/xml', (req, res) => {
+    const data = parseXmlFile();
+    res.json(data);
+});
+
+app.get('/yaml', (req, res) => {
+    const data = parseYamlFile();
+    res.json(data);
+});
+
+app.get('/json', (req, res) => {
+    const data = parseJsonFile();
+    res.json(data);
+});
+
+app.get('/csv', async (req, res) => {
+    const data = await parseCsvFile();
+    res.json(data);
+});
+
+// Endpoint to get data from Server B
+app.get('/from-server-b/:type', async (req, res) => {
+    try {
+        const { type } = req.params;
+        const response = await axios.get(`http://localhost:5000/data/${type}`);
+        res.json(response.data);
+    } catch (error) {
+        res.status(500).send(error.toString());
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Server A running at http://localhost:${port}`);
+});

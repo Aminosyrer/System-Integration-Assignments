@@ -1,4 +1,4 @@
-Name: Server A
+Name: Server B
 Age: 25
 City: Copenhagen
 
