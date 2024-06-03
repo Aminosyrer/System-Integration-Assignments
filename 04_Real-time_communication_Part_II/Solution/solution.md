@@ -12,9 +12,10 @@ To connect to the database, use the following template connection string in Mong
 
 Credentials:
 
-Username: `cani0006`
-
-Password: `CejHHf4S3mZWT6fs`
+```
+Username: integrator
+Password: gTtlSVW3az
+```
 
 The user has the following permissions:
 
@@ -26,9 +27,10 @@ The user has the following permissions:
 
 User credentials provided to me:
 
-Username: `amel0002`
-
-Password: `SV1ufp8W5TUaH4yP`
+```
+Username: amel0002
+Password: SV1ufp8W5TUaH4yP
+```
 
 - Read only access to the `read-only` collection.
 - Read-write access to the `read-and-write` collection.
