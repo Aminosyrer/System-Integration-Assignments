@@ -73,33 +73,32 @@ function parseCsvFile() {
     });
 }
 
-app.get('/text', (req, res) => {
+app.get('/data/text', (req, res) => {
     const data = parseTextFile();
     res.json(data);
 });
 
-app.get('/xml', (req, res) => {
+app.get('/data/xml', (req, res) => {
     const data = parseXmlFile();
     res.json(data);
 });
 
-app.get('/yaml', (req, res) => {
+app.get('/data/yaml', (req, res) => {
     const data = parseYamlFile();
     res.json(data);
 });
 
-app.get('/json', (req, res) => {
+app.get('/data/json', (req, res) => {
     const data = parseJsonFile();
     res.json(data);
 });
 
-app.get('/csv', async (req, res) => {
+app.get('/data/csv', async (req, res) => {
     const data = await parseCsvFile();
     res.json(data);
 });
 
-// Endpoint to get data from Server B
-app.get('/from-server-b/:type', async (req, res) => {
+app.get('/data/b/:type', async (req, res) => {
     try {
         const { type } = req.params;
         const response = await axios.get(`http://localhost:5000/data/${type}`);

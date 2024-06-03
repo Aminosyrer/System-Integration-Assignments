@@ -104,11 +104,11 @@ namespace ServerB.Controllers
             return Ok(parsedData);
         }
 
-        [HttpGet("from-server-a/{type}")]
+        [HttpGet("a/{type}")]
         public async Task<IActionResult> GetFromServerA(string type)
         {
             using var client = new HttpClient();
-            var response = await client.GetStringAsync($"http://localhost:3000/{type}");
+            var response = await client.GetStringAsync($"http://localhost:3000/data/{type}");
             return Content(response, "application/json");
         }
     }
