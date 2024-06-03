@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSE Example</title>
+</head>
+<body>
+    <h1>Server-Sent Events Example</h1>
+    <div id="events"></div>
+
+    <script>
+        if (typeof(EventSource) !== "undefined") {
+            const eventSource = new EventSource('/events');
+
+            eventSource.onmessage = function(event) {
+                const newElement = document.createElement("div");
+                newElement.textContent = "New event: " + event.data;
+                document.getElementById("events").appendChild(newElement);
+            };
+
+            eventSource.onerror = function(event) {
+                console.error("EventSource failed:", event);
+            };
+        }
+    </script>
+</body>
+</html>
