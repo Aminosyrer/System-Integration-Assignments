@@ -1,0 +1,24 @@
+version: '3.1'
+
+services:
+  source-postgres:
+    image: postgres
+    container_name: source-postgres
+    environment:
+      POSTGRES_DB: sourcedb
+      POSTGRES_USER: sourceuser
+      POSTGRES_PASSWORD: sourcepassword
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./init_source.sql:/docker-entrypoint-initdb.d/init.sql
+
+  target-postgres:
+    image: postgres
+    container_name: target-postgres
+    environment:
+      POSTGRES_DB: targetdb
+      POSTGRES_USER: targetuser
+      POSTGRES_PASSWORD: targetpassword
+    ports:
+      - "5434:5432"
