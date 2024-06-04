@@ -3,7 +3,6 @@ const passport = require('passport');
 
 const router = express.Router();
 
-// Auth0 authentication routes
 router.get('/login', passport.authenticate('auth0', {
     scope: 'openid email profile'
 }), (req, res) => {

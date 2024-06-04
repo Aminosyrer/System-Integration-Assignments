@@ -5,7 +5,6 @@ const path = require('path');
 
 const app = express();
 
-// Auth0 configuration
 const config = {
     authRequired: false,
     auth0Logout: true,
@@ -16,19 +15,15 @@ const config = {
     clientSecret: process.env.AUTH0_CLIENT_SECRET
 };
 
-// Middleware
 app.use(auth(config));
 
-// Set view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Home route
 app.get('/', (req, res) => {
     res.render('home', { user: req.oidc.user });
 });
 
-// Profile route
 app.get('/profile', (req, res) => {
     if (req.oidc.isAuthenticated()) {
         res.render('profile', { user: req.oidc.user });
@@ -37,7 +32,6 @@ app.get('/profile', (req, res) => {
     }
 });
 
-// Start server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);

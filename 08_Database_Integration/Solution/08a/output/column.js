@@ -2,7 +2,7 @@ var filterBy = function(tableType) {
 $.fn.dataTableExt.afnFiltering.length = 0;
 $.fn.dataTable.ext.search.push(
     function( settings, data, dataIndex ) {        
-        var type = data[1]; // use data for the Type column
+        var type = data[1];
  
         if ( type == tableType || tableType=='All' )
         {
