@@ -61,3 +61,67 @@ You can now open index.html in the output folder using whatever means such as th
     `docker exec -it target-postgres psql -U targetuser -d targetdb -f /dump.sql`
 
 10. Verify the target database using steps 5. and 6.
+
+# 08c
+
+1. Create the project and navigate to it
+
+```
+mkdir my-auth0-app
+cd my-auth0-app
+```
+
+2. Initialize a Node.js project
+
+```
+npm init -y
+```
+
+3. Install the required packages
+
+```
+npm install express express-session express-openid-connect dotenv
+```
+
+4. Set `http://localhost:3000` under "Allowed Callback URL" & "Allowed Logout URLs" in your Auth0 project settings
+
+
+5. Create a .env file in the root of the project and add your Auth0 credentials:
+
+```
+AUTH0_CLIENT_ID=your-auth0-client-id
+AUTH0_CLIENT_SECRET=your-auth0-client-secret
+AUTH0_DOMAIN=your-auth0-domain
+SESSION_SECRET=a-random-secret
+```
+Replace your-auth0-client-id, your-auth0-client-secret, and your-auth0-domain with your actual Auth0 application credentials.
+
+6. Set up Express and Auth0 using the instructions from your Auth0 Quick start tab
+
+```js
+const { auth } = require('express-openid-connect');
+
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: 'a long, randomly-generated string stored in env',
+  baseURL: 'http://localhost:3000',
+  clientID: 'lIhm9vumutlBfWQok7NoRziEwswRIo6q',
+  issuerBaseURL: 'https://dev-k0jr05nllam3bhdb.us.auth0.com'
+};
+
+// auth router attaches /login, /logout, and /callback routes to the baseURL
+app.use(auth(config));
+
+// req.isAuthenticated is provided from the auth router
+app.get('/', (req, res) => {
+  res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
+});
+```
+
+7. Run the project
+
+```
+node .\app.js
+```
+
