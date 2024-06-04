@@ -6,15 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stripe Integration</title>
     <script src="https://js.stripe.com/v3/"></script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <h1>Stripe Payment Integration</h1>
-    <form id="payment-form">
-        <div id="card-element"></div>
-        <button type="submit">Pay</button>
-        <div id="card-errors" role="alert"></div>
-    </form>
+    <div>
+        <h1>Stripe Payment Integration</h1>
+        <form id="payment-form">
+            <div id="card-element"></div>
+            <button type="submit">Pay</button>
+            <div id="card-errors" role="alert"></div>
+        </form>
+    </div>
     <script>
         const stripe = Stripe('pk_test_51PNiL6034krgSXIpfcFj0JQe9RLDeDeiOMjMUSRMALah2rgn7qxDe5P7w5h7JOqbMFFE4dRQxobA4QNzSKj9L9cn00rv2aafrf');
         const elements = stripe.elements();
@@ -26,7 +29,7 @@
         form.addEventListener('submit', async (event) => {
             event.preventDefault();
 
-            const { error, paymentIntent } = await stripe.createPaymentMethod({
+            const { error, paymentMethod } = await stripe.createPaymentMethod({
                 type: 'card',
                 card: cardElement,
             });
@@ -49,9 +52,7 @@
                 const paymentData = await response.json();
 
                 const { error, paymentIntent } = await stripe.confirmCardPayment(paymentData.clientSecret, {
-                    payment_method: {
-                        card: cardElement,
-                    },
+                    payment_method: paymentMethod.id,
                 });
 
                 if (error) {
